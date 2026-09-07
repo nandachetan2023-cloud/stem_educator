@@ -166,7 +166,13 @@ app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 app.use(express.static(path.join(__dirname, '../../build')));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/docs', express.static(path.join(__dirname, '../../docs')));
-app.use('/downloads', express.static(path.join(__dirname, '../../downloads')));
+app.use('/downloads', (req, res, next) => {
+  // The agent zip gets rebuilt/redeployed over time at the same filename -
+  // a stale cached copy served after an update is exactly how the require()
+  // fix looked like it "didn't work" for a user who'd downloaded it before.
+  res.setHeader('Cache-Control', 'no-store, must-revalidate');
+  next();
+}, express.static(path.join(__dirname, '../../downloads')));
 
 // ===== INITIALIZE MANAGERS =====
 const serialManager = new SerialManager(logger);

@@ -15132,8 +15132,13 @@ class MenuBar extends react__WEBPACK_IMPORTED_MODULE_7___default.a.Component {
       width: 16,
       height: 16
     }), 'Bluetooth'), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement("a", {
-      className: _menu_bar_css__WEBPACK_IMPORTED_MODULE_41___default.a.hwConnectItem,
-      href: "/downloads/hardware-agent.zip",
+      className: _menu_bar_css__WEBPACK_IMPORTED_MODULE_41___default.a.hwConnectItem
+      // Bump ?v=N every time downloads/hardware-agent.zip is
+      // rebuilt - a browser that cached an old download won't
+      // otherwise notice the file changed (no-store header on
+      // the route helps, but this guarantees a fresh fetch).
+      ,
+      href: "/downloads/hardware-agent.zip?v=2",
       title: "On the cloud-hosted app? The server has no USB access - download this small local helper to connect your Arduino.",
       style: {
         display: 'block',

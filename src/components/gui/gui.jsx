@@ -42,6 +42,7 @@ import TWWindChimeSubmitter from '../../containers/tw-windchime-submitter.jsx';
 
 import {STAGE_SIZE_MODES, FIXED_WIDTH, UNCONSTRAINED_NON_STAGE_WIDTH} from '../../lib/layout-constants';
 import {resolveStageSize} from '../../lib/screen-utils';
+import {getHwApiBase} from '../../lib/tw-hardware-agent';
 import {Theme} from '../../lib/themes';
 
 import {isRendererSupported, isBrowserSupported} from '../../lib/tw-environment-support-prober';
@@ -893,7 +894,7 @@ const GUIComponent = props => {
                                                     if (window.__hardwareConnection && window.__hardwareConnection.disconnect) {
                                                         try { await window.__hardwareConnection.disconnect(); } catch (_) {}
                                                     }
-                                                    const apiBase = window.location.protocol + '//' + window.location.hostname + ':3001/api';
+                                                    const apiBase = await getHwApiBase();
                                                     if (!port2) {
                                                         setHwLogLines(prev => prev.concat('[' + ts + '] ERROR: Not connected to any port. Connect your board first.'));
                                                         return;
@@ -954,7 +955,7 @@ const GUIComponent = props => {
                                                     if (window.__hardwareConnection && window.__hardwareConnection.disconnect) {
                                                         try { await window.__hardwareConnection.disconnect(); } catch (_) {}
                                                     }
-                                                    const apiBase = window.location.protocol + '//' + window.location.hostname + ':3001/api';
+                                                    const apiBase = await getHwApiBase();
                                                     
                                                     // Detect COM Port - if not connected, show port picker
                                                     if (!port2) {

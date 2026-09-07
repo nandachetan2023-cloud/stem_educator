@@ -36,6 +36,7 @@ npm-*
 # Node
 /backend/node_modules
 /frontend/node_modules
+/agent/node_modules
 
 # Backend runtime artifacts
 /backend/temp_sketches

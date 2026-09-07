@@ -27,6 +27,7 @@ import DeletionRestorer from '../../containers/deletion-restorer.jsx';
 import TurboMode from '../../containers/turbo-mode.jsx';
 import MenuBarHOC from '../../containers/menu-bar-hoc.jsx';
 import SettingsMenu from './settings-menu.jsx';
+import {getHwApiBase} from '../../lib/tw-hardware-agent';
 
 import FramerateChanger from '../../containers/tw-framerate-changer.jsx';
 import ChangeUsername from '../../containers/tw-change-username.jsx';
@@ -304,6 +305,14 @@ class MenuBar extends React.Component {
         window.addEventListener('hwShowPortPicker', this.handleShowPortPicker);
         window.addEventListener('authChanged', this.handleAuthChanged);
     }
+    // Fetches serial/compiler endpoints against whichever backend actually has
+    // USB access - same-origin on a full local install, or a local companion
+    // agent (see src/lib/tw-hardware-agent.js) when cloud-hosted.
+    hwFetch (path, opts) {
+        return getHwApiBase().then(function (base) {
+            return fetch(base + path, opts);
+        });
+    }
     componentWillUnmount () {
         document.removeEventListener('keydown', this.handleKeyPress);
         window.removeEventListener('hwShowPortPicker', this.handleShowPortPicker);
@@ -505,7 +514,7 @@ class MenuBar extends React.Component {
         var info = webSerialPort.getInfo ? webSerialPort.getInfo() : {};
         var vid = info && info.usbVendorId ? info.usbVendorId.toString(16).toUpperCase() : null;
         var pid = info && info.usbProductId ? info.usbProductId.toString(16).toUpperCase() : null;
-        fetch('/api/serial/ports').then(function(r){return r.json();}).then(function(data){
+        self.hwFetch('/serial/ports').then(function(r){return r.json();}).then(function(data){
             var ports = (data && data.ports) || [];
             var match = null;
             if (vid) {
@@ -530,7 +539,7 @@ class MenuBar extends React.Component {
     }
     fetchAndShowPorts (board, title, suffix) {
         var self = this;
-        fetch('/api/serial/ports').then(function(r){return r.json();}).then(function(data){
+        self.hwFetch('/serial/ports').then(function(r){return r.json();}).then(function(data){
             var ports = (data && data.ports) || [];
             if (ports.length > 0) {
                 self.setState({
@@ -611,7 +620,7 @@ class MenuBar extends React.Component {
         if (!ssid) return;
         var pass = prompt('Enter WiFi Password:');
         if (pass === null) return;
-        fetch('/api/serial/wifi', {
+        this.hwFetch('/serial/wifi', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ssid: ssid, password: pass, boardType: this.state.hwSelectedBoard})
@@ -671,8 +680,8 @@ class MenuBar extends React.Component {
         var boardId = typeof boardObj === 'object' ? (boardObj.id || boardObj.file) : boardObj;
         var suffix = this.state.hwPortPickerSuffix || '';
         var self = this;
-        fetch('/api/serial/disconnect-all', {method: 'POST'}).catch(function(){}).then(function(){
-        return fetch('/api/serial/connect', {
+        self.hwFetch('/serial/disconnect-all', {method: 'POST'}).catch(function(){}).then(function(){
+        return self.hwFetch('/serial/connect', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -713,7 +722,7 @@ class MenuBar extends React.Component {
     }
     handleRefreshPorts () {
         var self = this;
-        fetch('/api/serial/ports').then(function(r){return r.json();}).then(function(data){
+        self.hwFetch('/serial/ports').then(function(r){return r.json();}).then(function(data){
             var ports = (data && data.ports) || [];
             self.setState({hwPortPickerPorts: ports});
         }).catch(function(){});
@@ -736,7 +745,7 @@ class MenuBar extends React.Component {
         this.setState({hwBluetoothOpen: false});
     }
     handleFetchPorts () {
-        fetch('/api/serial/ports')
+        this.hwFetch('/serial/ports')
             .then(r => r.json())
             .then(data => this.setState({hwPorts: Array.isArray(data) ? data : (data.ports || [])}))
             .catch(() => this.setState({hwPorts: []}));
@@ -745,7 +754,7 @@ class MenuBar extends React.Component {
         this.setState({hwConnecting: true});
         window.__hardwareConnection = window.__hardwareConnection || {};
         window.__hardwareConnection.port = portPath;
-        fetch('/api/serial/connect', {
+        this.hwFetch('/serial/connect', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -774,7 +783,7 @@ class MenuBar extends React.Component {
                 .catch(() => {});
         }
         if (window.__hardwareConnection && window.__hardwareConnection.id) {
-            fetch('/api/serial/disconnect/' + window.__hardwareConnection.id, {method: 'POST'}).catch(function(){});
+            this.hwFetch('/serial/disconnect/' + window.__hardwareConnection.id, {method: 'POST'}).catch(function(){});
         }
         window.__hardwareConnection = null;
         this.setState({hwConnectedPort: null, hwSerialPort: null});

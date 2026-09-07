@@ -1,0 +1,20 @@
+{
+  "name": "stemapp-hardware-agent",
+  "version": "1.0.0",
+  "description": "Local companion agent - gives the cloud-hosted app USB access to your Arduino for compiling and flashing.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@serialport/parser-readline": "^12.0.0",
+    "cors": "^2.8.6",
+    "express": "^4.22.2",
+    "serialport": "^12.0.0",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "GPL-3.0"
+}

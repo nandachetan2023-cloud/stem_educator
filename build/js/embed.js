@@ -13958,7 +13958,21 @@ class MenuBar extends react__WEBPACK_IMPORTED_MODULE_7___default.a.Component {
       draggable: false,
       width: 16,
       height: 16
-    }), 'Bluetooth')))), this.state.hwBoardWarningOpen && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_7___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement("div", {
+    }), 'Bluetooth'), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement("a", {
+      className: _menu_bar_css__WEBPACK_IMPORTED_MODULE_41___default.a.hwConnectItem,
+      href: "/downloads/hardware-agent.zip",
+      title: "On the cloud-hosted app? The server has no USB access - download this small local helper to connect your Arduino.",
+      style: {
+        display: 'block',
+        textDecoration: 'none',
+        borderTop: '1px solid rgba(0,0,0,0.08)'
+      }
+    }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement("img", {
+      src: _icon_usb_svg__WEBPACK_IMPORTED_MODULE_55___default.a,
+      draggable: false,
+      width: 16,
+      height: 16
+    }), 'Get Hardware Agent')))), this.state.hwBoardWarningOpen && /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_7___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement("div", {
       className: _menu_bar_css__WEBPACK_IMPORTED_MODULE_41___default.a.hwModalBackdrop,
       onClick: this.handleBoardWarningClose
     }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_7___default.a.createElement("div", {

@@ -83,6 +83,7 @@ Source: "..\tools\arduino-cli\*"; DestDir: "{app}\tools\arduino-cli"; Flags: ign
 Source: "..\tools\find-arduino-port.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\tools\find-arduino-port.cpp"; DestDir: "{app}\tools"; Flags: ignoreversion skipifsourcedoesntexist
 Source: "..\docs\*"; DestDir: "{app}\docs"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
+Source: "..\downloads\*"; DestDir: "{app}\downloads"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 Source: "uninstall.bat"; DestDir: "{app}\installer"; Flags: ignoreversion
 Source: "scripts\stop-server.ps1"; DestDir: "{app}\installer\scripts"; Flags: ignoreversion
 

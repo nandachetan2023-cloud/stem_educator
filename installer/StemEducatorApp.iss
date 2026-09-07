@@ -70,6 +70,7 @@ Source: "..\backend\src\*"; DestDir: "{app}\backend\src"; Flags: ignoreversion r
 Source: "..\backend\firmware\*"; DestDir: "{app}\backend\firmware"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 Source: "..\backend\.env.example"; DestDir: "{app}\backend"; Flags: ignoreversion
 Source: "..\docs\*"; DestDir: "{app}\docs"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
+Source: "..\downloads\*"; DestDir: "{app}\downloads"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 Source: "uninstall.bat"; DestDir: "{app}\installer"; Flags: ignoreversion
 
 [Icons]

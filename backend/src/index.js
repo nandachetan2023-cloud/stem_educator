@@ -166,6 +166,7 @@ app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 app.use(express.static(path.join(__dirname, '../../build')));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/docs', express.static(path.join(__dirname, '../../docs')));
+app.use('/downloads', express.static(path.join(__dirname, '../../downloads')));
 
 // ===== INITIALIZE MANAGERS =====
 const serialManager = new SerialManager(logger);

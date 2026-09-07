@@ -1,0 +1,56 @@
+# Mac OS
+.DS_Store
+
+# NPM
+/node_modules
+npm-*
+
+# Testing
+/.nyc_output
+/coverage
+
+# Build
+/build
+/dist
+/.opt-in
+
+# Generated translation files
+/translations
+/locale
+
+# Other generated source
+/src/generated
+
+# Downloaded during "npm install"
+/static/microbit
+
+# for act
+.secrets
+
+# ===== Local app additions =====
+# Logs
+*.log
+/logs
+/backend/logs
+
+# Node
+/backend/node_modules
+/frontend/node_modules
+
+# Backend runtime artifacts
+/backend/temp_sketches
+/backend/uploads
+/backend/$null
+
+# Editor configs
+.claude/
+.vscode/
+
+# Firmware build intermediates (keep the .hex outputs)
+/backend/firmware/stage_firmware/build_*/
+
+# Secrets - never commit real credentials
+backend/.env
+
+# Built installer binaries (large; rebuild locally via installer/Build-SetupExe.ps1)
+installer/Output/

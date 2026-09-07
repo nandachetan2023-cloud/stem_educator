@@ -1,0 +1,791 @@
+@import "../../css/units.css";
+@import "../../css/colors.css";
+@import "../../css/z-index.css";
+
+.page-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.body-wrapper {
+    flex-grow: 1;
+    background-color: $ui-primary;
+}
+
+.body-wrapper * {
+    box-sizing: border-box;
+}
+
+.flex-wrapper {
+    display: flex;
+
+    /*
+        Make 2 columns:
+        a) for the blocks + workspace panes, and
+        b) for combined stage menu + stage + sprite/stage selectors
+    */
+    flex-direction: row;
+    height: 100%;
+
+    /*
+        Allow horizontal scroll on narrow screens while hiding vertical scroll.
+        min-width: 0 lets flex items shrink below their content size.
+    */
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.editor-wrapper {
+    /*
+        This is carefully balanced--  the minimum width at which the GUI will be displayed is 1024px.
+        At that size, the stage pane is 408px wide, with $space of padding to each side.
+        However, we must also add the border width to the stage pane. All-in-all, the stage pane's final width is
+        408px + ($space + $stage-standard-border-width * 2) (one border & padding per left/right side).
+
+        @todo This is in place to prevent "doubling up" of horizontal scrollbars in narrow windows, but there are likely
+        much better ways to solve that (e.g. undo #2124, remove this flex-basis entirely). However, they run their own
+        risks of breaking things, so let's just leave this as-is for the time being.
+    */
+    flex-basis: calc(1024px - 408px - (($space + $stage-standard-border-width) * 2));
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 280px;
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-list {
+    height: $stage-menu-height;
+    width: 250px; /* Match width of the toolbox */
+    display: flex;
+    align-items: flex-end;
+    flex-shrink: 0;
+
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: 500;
+    font-size: 0.80rem;
+
+    /* Overrides for react-tabs styling */
+    margin: 0 !important;
+    border-bottom: 0 !important;
+
+    color: $text-primary;
+}
+
+.tab {
+    flex-grow: 1;
+    height: 80%;
+    margin-bottom: 0;
+
+    border-radius: 1rem 1rem 0 0;
+    border: 1px solid $ui-black-transparent;
+
+    padding: 0.125rem 1.25rem 0;
+    font-size: 0.75rem;
+
+    background-color: $ui-tertiary;
+    color: $text-primary-transparent;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    user-select: none;
+    white-space: nowrap;
+}
+
+[dir="ltr"] .tab {
+    margin-left: -0.5rem;
+}
+
+[dir="rtl"] .tab {
+    margin-right: -0.5rem;
+}
+
+[dir="ltr"] .tab:nth-of-type(1) {
+    margin-left: 0;
+}
+
+[dir="rtl"] .tab:nth-of-type(1) {
+    margin-right: 0;
+}
+
+/* Use z-indices to force left-on-top for tabs */
+.tab:nth-of-type(1) {
+    z-index: 3;
+}
+.tab:nth-of-type(2) {
+    z-index: 2;
+}
+.tab:nth-of-type(3) {
+    z-index: 1;
+}
+
+.tab:hover {
+  background-color: $ui-primary;
+}
+
+.tab.is-selected {
+    height: 90%;
+    color: $looks-secondary;
+    background-color: $ui-white;
+    z-index: 4; /* Make sure selected is always above */
+}
+
+.tab img {
+    width: 1.375rem;
+    filter: grayscale(100%);
+}
+
+[dir="ltr"] .tab img {
+    margin-right: 0.125rem;
+}
+
+[dir="rtl"] .tab img {
+    margin-left: 0.125rem;
+}
+
+/* mirror blocks and sound tab icons */
+[dir="rtl"] .tab:nth-of-type(1) img {
+    transform: scaleX(-1);
+}
+
+[dir="rtl"] .tab:nth-of-type(3) img {
+    transform: scaleX(-1);
+}
+
+.tab.is-selected img {
+    filter: none;
+}
+
+/* Tab style overrides from react-tabs */
+.tab.is-selected:after {
+    display: none;
+}
+
+.tab.is-selected:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: $ui-black-transparent;
+}
+
+.tab.is-selected:focus:after {
+    display: none;
+}
+
+/* Body of the tabs */
+.tabs {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-panel {
+    position: relative;
+    flex-grow: 1;
+    display: none;
+}
+
+.tab-panel.is-selected {
+    display: flex;
+}
+
+.blocks-wrapper {
+    flex-grow: 1;
+    position: relative;
+}
+
+/* ── C++ Code Panel (Upload mode, replaces stage) ── */
+
+.hw-code-panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    overflow: hidden;
+    border-left: 1px solid #ddd;
+}
+
+.hw-code-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 10px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    flex-shrink: 0;
+    height: 44px;
+}
+
+.hw-code-icon-btn {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 32px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    color: #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.hw-code-icon-btn:hover {
+    background: #f0f0f0;
+    border-color: #aaa;
+}
+
+.hw-code-lock-active {
+    background: #fff3e0;
+    border-color: #fb8c00;
+    color: #e65100;
+}
+
+.hw-code-panel-spacer {
+    flex: 1;
+}
+
+.hw-clear-btn {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 32px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.hw-clear-btn:hover {
+    background: #f5f5f5;
+    border-color: #aaa;
+    color: #e53935;
+}
+
+.hw-clear-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.hw-upload-code-btn {
+    background: $looks-secondary;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    height: 30px;
+}
+
+.hw-upload-code-btn:hover {
+    opacity: 0.88;
+}
+
+.hw-firmware-btn {
+    background: #5C6BC0;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+    height: 30px;
+    margin-left: 4px;
+}
+
+.hw-firmware-btn:hover {
+    opacity: 0.88;
+}
+
+.hw-code-lang-label {
+    font-size: 13px;
+    font-weight: bold;
+    color: #888;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.hw-code-editor-area {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    background: #f8f8f8;
+}
+
+.hw-line-numbers {
+    width: 44px;
+    flex-shrink: 0;
+    background: #f0f0f0;
+    border-right: 1px solid #ddd;
+    padding: 14px 6px 14px 0;
+    text-align: right;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #999;
+    overflow: hidden;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.hw-line-num {
+    padding-right: 6px;
+    line-height: 1.6;
+}
+
+.hw-code-textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 14px 16px;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #f8f8f8;
+    tab-size: 4;
+    overflow: auto;
+}
+
+.hw-code-textarea-locked {
+    background: #f8f8f8;
+    cursor: default;
+    color: #333;
+    caret-color: transparent;
+}
+
+.hw-code-bottom-panel {
+    flex-shrink: 0;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    border-top: 2px solid #e0e0e0;
+    background: #fff;
+}
+
+.hw-code-bottom-tabs {
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #e0e0e0;
+    flex-shrink: 0;
+}
+
+.hw-code-bottom-tab {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+    margin-bottom: -1px;
+}
+
+.hw-code-bottom-tab:hover {
+    color: #555;
+    background: #f5f5f5;
+}
+
+.hw-code-bottom-tab-active {
+    background: none;
+    border: none;
+    border-bottom: 2px solid $looks-secondary;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    color: $looks-secondary;
+    cursor: pointer;
+    margin-bottom: -1px;
+}
+
+.hw-code-bottom-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 12px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 12px;
+    color: #333;
+    background: #fafafa;
+}
+
+.hw-log-line {
+    line-height: 1.6;
+    color: #555;
+}
+
+.hw-serial-placeholder {
+    color: #aaa;
+    font-style: italic;
+    font-size: 12px;
+    padding-top: 4px;
+}
+
+.hw-serial-output {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 12px;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background: #fafafa;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.hw-serial-line {
+    line-height: 1.6;
+    padding: 1px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.hw-serial-placeholder-text {
+    color: #aaa;
+    font-style: italic;
+    font-size: 12px;
+}
+
+.hw-serial-controls {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #e0e0e0;
+    background: #fff;
+    flex-shrink: 0;
+    padding: 6px 8px;
+    gap: 6px;
+}
+
+.hw-serial-baud-select {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px 6px;
+    font-size: 11px;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    background: #fff;
+    color: #333;
+    cursor: pointer;
+    flex-shrink: 0;
+    outline: none;
+}
+
+.hw-serial-baud-select:focus {
+    border-color: #00979D;
+}
+
+.hw-serial-input {
+    flex: 1;
+    border: 2px solid #ffd54f;
+    border-radius: 4px;
+    outline: none;
+    padding: 6px 10px;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 12px;
+    color: #333;
+    background: #fffde7;
+}
+
+.hw-serial-input:focus {
+    border-color: #ffb300;
+    background: #fff8e1;
+}
+
+.hw-serial-send-btn {
+    background: #1976D2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    flex-shrink: 0;
+    height: 30px;
+    line-height: 1;
+}
+
+.hw-serial-send-btn:hover {
+    background: #1565C0;
+}
+
+.hw-serial-send-btn:active {
+    background: #0D47A1;
+}
+
+.hw-serial-clear-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 11px;
+    color: #666;
+    cursor: pointer;
+    flex-shrink: 0;
+    height: 30px;
+}
+
+.hw-serial-clear-btn:hover {
+    background: #f5f5f5;
+    border-color: #bbb;
+}
+
+.hw-serial-close-btn {
+    background: none;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 14px;
+    color: #999;
+    cursor: pointer;
+    flex-shrink: 0;
+    height: 30px;
+    line-height: 1;
+}
+
+.hw-serial-close-btn:hover {
+    background: #fee;
+    color: #c00;
+}
+
+.python-wrapper {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.python-editor {
+    flex-grow: 1;
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    padding: 12px 16px;
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    background: #f9f9f9;
+}
+
+.stage-and-target-wrapper {
+    /*
+        Makes rows for children:
+          1) stage menu
+          2) stage
+          3) sprite/stage selectors
+        Only reason we need this, is so .targetWrapper, which holds the selectors,
+        goes to full vertical height of the window
+    */
+    display: flex;
+    flex-direction: column;
+    /* pad entire wrapper to the left and right; allow children to fill width */
+    padding-left: $space;
+    padding-right: $space;
+
+    /* this will only ever be as wide as the stage */
+    flex-basis: 0;
+}
+
+.target-wrapper {
+    display: flex;
+    flex-grow: 1;
+    flex-basis: 0;
+
+    padding-top: $space;
+    min-height: 0; /* this makes it work in Firefox */
+
+    /*
+        For making the sprite-selector a scrollable pane
+        @todo: Not working in Safari
+    */
+    /* TODO this also breaks the thermometer menu */
+    /* overflow: hidden; */
+}
+
+.extension-button-container {
+    width: 3.75rem;
+    height: 3.25rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: $z-index-extension-button;
+    background: $looks-secondary;
+
+    border: 1px solid $looks-secondary;
+    box-sizing: content-box; /* To match scratch-block vertical toolbox borders */
+}
+
+$fade-out-distance: 15px;
+
+.extension-button-container:before {
+    content: "";
+    position: absolute;
+    top: calc(calc(-1 * $fade-out-distance) - 1px);
+    left: -1px;
+    background: linear-gradient(rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.15));
+    height: $fade-out-distance;
+    width: calc(100% + 0.5px);
+}
+
+
+.extension-button {
+    background: none;
+    border: none;
+    outline: none;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    user-select: none;
+}
+
+.extension-button-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+[dir="rtl"] .extension-button-icon {
+    transform: scaleX(-1);
+}
+
+.extension-button > div {
+    margin-top: 0;
+}
+
+/* Sprite Selection Watermark */
+.watermark {
+    position: absolute;
+    top: 1.25rem;
+    pointer-events: none;
+}
+
+[dir="ltr"] .watermark {
+    right: 1.25rem;
+}
+
+[dir="rtl"] .watermark {
+    left: 1.25rem;
+}
+
+/* Menu */
+
+.menu-bar-position {
+    position: relative;
+    z-index: $z-index-menu-bar;
+}
+/* Alerts */
+
+.alerts-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    z-index: $z-index-alerts;
+    position: absolute;
+    margin-top: 53px;
+    pointer-events: none;
+}
+
+/*
+    Make the (background) page not scrollable when modals are open
+    This CSS class is automatically added to the body when react-modal is open
+*/
+:global(.ReactModal__Body--open) {
+    overflow: hidden;
+}
+
+/* when in the browser's fullscreen mode, we need to put our own background to avoid just having black */
+.fullscreen-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* overridden by JS; this will be used if the browser can't understand that color */
+    background-color: white;
+}
+
+/* ── Upload mode: responsive stage/code panel width ── */
+
+.hw-upload-active {
+    flex: 0 0 520px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* ── Responsive breakpoints ── */
+
+@media (max-width: 1200px) {
+    .hw-upload-active {
+        flex: 0 0 440px;
+    }
+}
+
+@media (max-width: 900px) {
+    .hw-upload-active {
+        flex: 0 0 360px;
+    }
+    .stage-and-target-wrapper {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .hw-upload-active {
+        flex: 0 0 300px;
+    }
+    .hw-code-panel-header {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 44px;
+        padding: 4px 6px;
+        gap: 2px;
+    }
+    .hw-code-panel {
+        min-width: 280px;
+    }
+    .hw-code-textarea {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+    .hw-code-bottom-panel {
+        height: 100px;
+    }
+    .hw-code-bottom-tab {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+}
+
+/* Menu bar tweaks for small screens */
+@media (max-width: 768px) {
+    .menu-bar-position {
+        overflow-x: auto;
+    }
+}

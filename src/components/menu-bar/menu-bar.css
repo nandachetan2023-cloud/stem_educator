@@ -1,0 +1,1221 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+@import "../../css/z-index.css";
+
+.menu-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+
+    /*
+        For most things, we shouldn't explicitly set height, and let the
+        content push the element to whatever fits. Using a fixed height
+        instead, will help us subtract the value we assign from the body,
+        adding up to a perfect 100%. This means we don't need to set
+        overflow: hidden, which makes it hard to debug. border-box
+        simplifies by all of this by removing padding from the equation.
+    */
+    box-sizing: border-box;
+    height: $menu-bar-height;
+
+    /*
+        @todo: This adds ~20px in Chrome, when scrolling to the right,
+        but fixes [FFx + Safari] [resize window down + scroll to the right] bug.
+        width: 100%;
+    */
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: $menu-bar-standard-font-size;
+    font-weight: bold;
+    background-color: $menu-bar-background;
+    background-image: $menu-bar-background-image;
+    color: $menu-bar-foreground;
+}
+
+.main-menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    align-items: center;
+    flex-grow: 1;
+    gap: 0.5rem;
+}
+.inactive {
+    opacity: 0;
+}
+.scratch-logo {
+    height:  2.2rem;
+    vertical-align: middle;
+}
+
+.scratch-logo.clickable {
+    cursor: pointer;
+}
+
+.menu-bar-item {
+    display: flex;
+    text-decoration: none;
+    user-select: none;
+    align-self: center;
+    position: relative;
+    align-items: center;
+    white-space: nowrap;
+    height: $menu-bar-height;
+}
+
+.menu-bar-item.hoverable {
+    cursor: pointer;
+}
+
+.menu-bar-item.active,
+.menu-bar-item.hoverable:hover {
+    background-color: $ui-black-transparent;
+}
+
+.menu-bar-item.growable {
+    max-width: $menu-bar-item-max-width;
+    flex: 1;
+}
+
+.title-field-growable {
+    flex-grow: 1;
+    width: 2rem;
+}
+
+.file-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.file-group .menu-bar-item {
+    padding: 0 0.5rem;
+}
+
+.menu-bar-menu {
+    margin-top: $menu-bar-height;
+    z-index: $z-index-menu-bar;
+}
+
+.feedback-link {
+    color: $menu-bar-background;
+    text-decoration: none;
+}
+
+.feedback-button {
+    background-color: white;
+    color: inherit;
+    height: 34px;
+}
+
+.divider {
+    height: 34px;
+}
+
+.author-info {
+    margin-left: .25rem;
+    margin-right: .6875rem;
+}
+
+.menu-bar-button {
+    height: $menu-bar-button-size;
+}
+
+.remix-button {
+    background-color: $pen-primary
+}
+
+.remix-button-icon {
+    height: 1.25rem;
+}
+
+.coming-soon >:not(.coming-soon-tooltip) {
+    opacity: 0.5;
+}
+
+.account-info-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.account-info-group .menu-bar-item {
+    margin: 0 .25rem;
+    padding: 0 0.75rem;
+}
+
+.auth-button {
+    cursor: pointer;
+    padding: 15px 24px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.15);
+    color: inherit;
+    white-space: nowrap;
+    user-select: none;
+    margin-right: 0.25rem;
+    transition: background 0.15s;
+}
+
+.auth-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.admin-link {
+    cursor: pointer;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+
+.admin-link:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.mystuff-icon {
+    margin: 0 .25rem;
+    height: 1rem;
+}
+
+.help-icon {
+    margin: 0 .25rem 0 0;
+}
+
+[dir="rtl"] .help-icon {
+    margin: 0 0 0 .25rem;
+}
+
+.account-nav-menu, .mystuff-button {
+    padding: 0 .25rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.profile-icon {
+    margin: 0 .25rem;
+    width: $menu-bar-button-size;
+    border-radius: $form-radius;
+}
+
+.dropdown-caret-icon {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+[dir="ltr"] .dropdown-caret-icon {
+    margin-left: .5rem;
+}
+
+[dir="rtl"] .dropdown-caret-icon {
+    margin-right: .5rem;
+}
+
+.disabled {
+    opacity: 0.5;
+}
+
+.mystuff > a {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 45%;
+  padding-right: 10px;
+  padding-left: 10px;
+  width: 30px;
+  overflow: hidden;
+  text-indent: 50px;
+  white-space: nowrap;
+}
+.mystuff > a:hover {
+  background-size: 50%;
+}
+
+.mystuff > a {
+  /* background-image: url("/images/mystuff.png"); */
+}
+
+.about-icon {
+    height: 1.25rem;
+    margin: 0.5rem;
+    vertical-align: middle;
+}
+
+.collapsible-label {
+    margin: 0 .25rem;
+}
+
+@media only screen and (max-width: 1124px) {
+    .tutorials-label, .collapsible-label {
+        display: none;
+    }
+
+    .help-icon {
+        margin-right: 0;
+    }
+}
+
+.menu-item-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Mode / Stage / Upload switcher */
+.hw-mode-switcher {
+    display: flex;
+    align-items: center;
+    margin: 0 0.5rem;
+}
+
+.hw-mode-switch-btn {
+    background: transparent;
+    color: $menu-bar-foreground;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    height: 26px;
+    line-height: 1;
+}
+
+.hw-mode-label {
+    color: $menu-bar-foreground;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 6px;
+    opacity: 0.85;
+}
+
+.hw-mode-switch-btn:first-of-type {
+    border-radius: 4px 0 0 4px;
+}
+
+.hw-mode-switch-btn:last-of-type {
+    border-radius: 0 4px 4px 0;
+}
+
+.hw-mode-switch-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.hw-mode-switch-btn-active {
+    background: white;
+    color: $menu-bar-background;
+    border-color: white;
+}
+
+.hw-mode-switch-btn-active:hover {
+    background: white;
+}
+
+/* Hardware Board & Connect menus */
+.hw-board-menu,
+.hw-connect-menu {
+    position: relative;
+}
+
+.hw-menu-trigger {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 8px;
+    height: 100%;
+    cursor: pointer;
+}
+
+.hw-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 399;
+}
+
+.hw-board-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    z-index: 501;
+    width: 400px;
+    overflow: hidden;
+}
+
+.hw-board-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: $menu-bar-background;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.hw-board-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 16px 20px 20px;
+}
+
+.hw-board-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #fafafa;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.hw-board-tile:hover {
+    border-color: #4c97ff;
+    background: #eef4ff;
+}
+
+.hw-board-img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+
+.hw-board-name {
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+}
+
+.hw-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4caf50;
+    display: inline-block;
+    margin-left: 2px;
+}
+
+.hw-status-dot-green {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4caf50;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.hw-connect-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    z-index: 400;
+    min-width: 160px;
+    overflow: hidden;
+}
+
+.hw-connect-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    font-weight: normal;
+}
+
+.hw-connect-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    color: #333;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.hw-connect-item img {
+    filter: brightness(0) saturate(100%);
+}
+
+.hw-connect-item:hover {
+    background: #eef4ff;
+}
+
+.hw-disconnect-btn {
+    background: #ff5252;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.hw-disconnect-btn:hover {
+    background: #d32f2f;
+}
+
+/* Serial / Bluetooth modal popup */
+.hw-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 500;
+}
+
+.hw-port-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    z-index: 501;
+    width: 400px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.hw-port-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: $menu-bar-background;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.hw-modal-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.hw-modal-close-btn:hover {
+    opacity: 0.7;
+}
+
+.hw-port-modal-body {
+    padding: 16px 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.hw-no-ports-msg {
+    color: #888;
+    font-size: 13px;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.hw-port-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hw-port-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: border-color 0.15s;
+}
+
+.hw-port-row:hover {
+    border-color: #4c97ff;
+}
+
+.hw-port-row-connected {
+    border-color: #4caf50;
+    background: #f1f8e9;
+}
+
+.hw-port-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.hw-port-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+.hw-port-mfr {
+    font-size: 11px;
+    color: #888;
+}
+
+.hw-port-connect-btn {
+    background: #4c97ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.hw-port-connect-btn:hover {
+    background: #3373cc;
+}
+
+.hw-port-connect-btn:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
+.hw-port-modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: center;
+}
+
+.hw-refresh-btn {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 6px 24px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #555;
+}
+
+.hw-refresh-btn:hover {
+    background: #f5f5f5;
+}
+
+/* Board warning modal */
+.hw-warning-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    z-index: 501;
+    width: 380px;
+    overflow: hidden;
+}
+
+.hw-warning-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #c62828;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.hw-warning-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.hw-warning-close-btn:hover {
+    opacity: 0.7;
+}
+
+.hw-warning-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px 20px;
+}
+
+.hw-warning-icon {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 16px;
+}
+
+.hw-warning-text {
+    font-size: 15px;
+    color: #666;
+    margin: 0;
+    text-align: center;
+}
+
+.hw-warning-footer {
+    display: flex;
+    justify-content: center;
+    padding: 16px 20px 24px;
+}
+
+.hw-select-board-btn {
+    background: #7b1fa2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 28px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.hw-select-board-btn:hover {
+    background: #6a1b9a;
+}
+
+/* Connect instruction modal */
+.hw-instruction-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    z-index: 501;
+    width: 440px;
+    overflow: hidden;
+}
+
+.hw-instruction-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background: #1565c0;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.hw-instruction-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.hw-instruction-close-btn:hover {
+    opacity: 0.7;
+}
+
+.hw-instruction-body {
+    padding: 20px 24px 16px;
+}
+
+.hw-instruction-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 16px;
+}
+
+.hw-instruction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hw-instruction-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.5;
+}
+
+.hw-instruction-num {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    border-radius: 50%;
+    background: #1565c0;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.hw-instruction-tip {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: #fff8e1;
+    border-left: 4px solid #ffa000;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.hw-instruction-tip strong {
+    color: #e65100;
+}
+
+.hw-instruction-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 8px 24px 20px;
+}
+
+.hw-instruction-cancel-btn {
+    background: #f0f0f0;
+    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 9px 24px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.hw-instruction-cancel-btn:hover {
+    background: #e0e0e0;
+}
+
+.hw-instruction-continue-btn {
+    background: #1565c0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 32px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.hw-instruction-continue-btn:hover {
+    background: #0d47a1;
+}
+
+/* ── Responsive menu bar ── */
+
+@media (max-width: 900px) {
+    .menu-bar {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: $menu-bar-height;
+        gap: 0;
+    }
+    .menu-bar-item {
+        height: 2.5rem;
+    }
+    .file-group {
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .menu-bar {
+        font-size: 0.7rem;
+    }
+    .menu-bar-item {
+        height: 2.2rem;
+        padding: 0 0.3rem;
+    }
+    .collapsible-label {
+        display: none;
+    }
+}
+
+/* container for board menu and auth dropdown — anchors absolute children */
+.hwBoardMenu,
+.hwConnectMenu {
+    position: relative;
+}
+
+/* board/connect menu trigger */
+.hwMenuTrigger {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    user-select: none;
+}
+.hwMenuTrigger:hover {
+    background: rgba(255,255,255,0.15);
+    border-radius: 4px;
+}
+
+/* Board selection modal */
+.hwBoardModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    z-index: 9999;
+    min-width: 420px;
+    max-width: 520px;
+    overflow: hidden;
+}
+.hwBoardModalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+}
+.hwModalCloseBtn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+    padding: 0 4px;
+    line-height: 1;
+}
+.hwModalCloseBtn:hover {
+    color: #333;
+}
+.hwBoardGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 20px;
+}
+.hwBoardTile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.hwBoardTile:hover {
+    border-color: #4c97ff;
+    box-shadow: 0 2px 8px rgba(76,151,255,0.15);
+}
+.hwBoardImg {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    margin-bottom: 8px;
+}
+.hwBoardName {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    text-align: center;
+}
+
+/* Connect modal/dropdown */
+.hwConnectStatus {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 4px 6px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #166534;
+}
+.hwDisconnectBtn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid #dc2626;
+    color: #dc2626;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+/* Mode switcher (Stage/Upload) */
+.hwModeSwitcher {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+}
+.hwModeLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    margin-right: 4px;
+}
+.hwModeSwitchBtn {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.85);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.hwModeSwitchBtn:hover {
+    background: rgba(255,255,255,0.2);
+}
+.hwModeSwitchBtnActive {
+    background: #4c97ff;
+    border-color: #4c97ff;
+    color: #fff;
+}
+
+/* Warning modal */
+.hwWarningModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    z-index: 9999;
+    min-width: 340px;
+    max-width: 420px;
+    overflow: hidden;
+}
+.hwWarningHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid #eee;
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+}
+.hwWarningCloseBtn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #999;
+    padding: 0 4px;
+}
+.hwWarningBody {
+    padding: 20px;
+    text-align: center;
+}
+.hwWarningIcon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 12px;
+}
+.hwWarningText {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+    margin: 0;
+}
+.hwWarningFooter {
+    padding: 12px 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+.hwSelectBoardBtn {
+    background: #4c97ff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.hwSelectBoardBtn:hover {
+    background: #3a7bd5;
+}
+
+/* Port picker modal */
+.hwPortModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    z-index: 9999;
+    min-width: 380px;
+    max-width: 480px;
+    overflow: hidden;
+}
+.hwPortModalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid #eee;
+    font-size: 15px;
+    font-weight: 700;
+    color: #333;
+}
+.hwPortModalBody {
+    padding: 12px 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.hwPortModalFooter {
+    padding: 10px 20px;
+    border-top: 1px solid #eee;
+    text-align: right;
+}
+.hwPortList {
+    display: flex;
+    flex-direction: column;
+}
+.hwPortRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+.hwPortRow:hover {
+    background: #f9f9f9;
+}
+.hwPortInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.hwPortName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+.hwPortMfr {
+    font-size: 11px;
+    color: #999;
+}
+.hwPortConnectBtn {
+    background: #4c97ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 14px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.hwPortConnectBtn:hover {
+    background: #3a7bd5;
+}
+.hwNoPortsMsg {
+    padding: 30px 20px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+.hwRefreshBtn {
+    background: #f0f0f0;
+    color: #555;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 6px 18px;
+    font-size: 12px;
+    cursor: pointer;
+}
+.hwRefreshBtn:hover {
+    background: #e5e5e5;
+}
+
+/* Status dot */
+.hwStatusDot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* backdrop for modals/dropdowns */
+.hwModalBackdrop,
+.hwBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 9998;
+}
+
+/* connect/auth dropdown menu */
+.hwConnectDropdown {
+    position: absolute;
+    top: 100%;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 160px;
+    overflow: hidden;
+}
+
+/* clickable items inside the dropdown */
+.hwConnectItem {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+    white-space: nowrap;
+}
+.hwConnectItem:hover {
+    background: #f5f5f5;
+}

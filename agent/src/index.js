@@ -6,16 +6,21 @@
  * Arduino and exposes the same serial/compile/upload API on localhost, so
  * the web page can reach real hardware even though its own server can't.
  *
- * Reuses the exact same serial/compiler/firmware modules the full offline
- * installer uses - same code, same board support, just packaged standalone
- * with no database/accounts/tenant system attached.
+ * Fully self-contained: this whole `agent/` folder is what gets zipped and
+ * downloaded standalone (no sibling backend/ folder exists once extracted),
+ * so it carries its own copies of the serial/compiler/firmware modules
+ * instead of reaching across to backend/ - same code, same board support,
+ * just no database/accounts/tenant system attached.
  */
 
+const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 
-const SerialManager = require('../../backend/src/serial/SerialManager');
-const ArduinoCompiler = require('../../backend/src/compiler/ArduinoCompiler');
+const SerialManager = require('./serial/SerialManager');
+const ArduinoCompiler = require('./compiler/ArduinoCompiler');
+const FirmwareUploader = require('./firmware/FirmwareUploader');
 
 const PORT = process.env.AGENT_PORT || 8899;
 
@@ -27,6 +32,14 @@ const logger = {
 
 const serialManager = new SerialManager(logger);
 const arduinoCompiler = new ArduinoCompiler(logger);
+const firmwareUploader = new FirmwareUploader(logger);
+
+const boardFqbnMap = {
+  arduino_uno: 'arduino:avr:uno',
+  arduino_nano: 'arduino:avr:nano',
+  arduino_mega: 'arduino:avr:mega:cpu=atmega2560',
+  esp32: 'esp32:esp32:esp32'
+};
 
 const app = express();
 app.use(express.json({limit: '5mb'}));
@@ -145,8 +158,86 @@ app.post('/api/compiler/compile-upload-cpp', async (req, res) => {
   }
 });
 
+app.get('/api/firmware/boards', (req, res) => {
+  res.json({boards: firmwareUploader.getSupportedBoards()});
+});
+
+// "Firmware" button (blank/reset sketch) - prefers a prebuilt .hex bundled in
+// firmware/stage_firmware/ (fast, no compile step); falls back to compiling
+// the .ino from source if the prebuilt hex isn't present for that board.
+app.post('/api/firmware/upload-stage', async (req, res) => {
+  try {
+    const {boardType, port} = req.body || {};
+    if (!port) return res.status(400).json({error: 'No port specified'});
+    const normPort = normalizePort(port);
+    if (!lockPort(normPort)) {
+      return res.status(409).json({error: 'An upload on ' + normPort + ' is already running. Please wait for it to finish.'});
+    }
+    try {
+      const sketchDir = path.join(__dirname, '..', 'firmware', 'stage_firmware');
+      const inoPath = path.join(sketchDir, 'stage_firmware.ino');
+      const fqbn = boardFqbnMap[boardType] || 'arduino:avr:uno';
+
+      const prebuiltHex = {
+        arduino_uno: 'stage_firmware_uno.hex',
+        arduino_nano: 'stage_firmware_nano.hex',
+        arduino_mega: 'stage_firmware_mega2560.hex'
+      }[boardType];
+      const hexPath = prebuiltHex ? path.join(sketchDir, prebuiltHex) : null;
+
+      let compileOutput = '';
+      let hexToUpload = null;
+      let tmpSketchPath = null;
+      if (hexPath && fs.existsSync(hexPath)) {
+        compileOutput = 'Using prebuilt ' + prebuiltHex;
+      } else {
+        if (!arduinoCompiler.isAvailable()) {
+          return res.status(500).json({error: 'arduino-cli not available and no prebuilt firmware for this board.'});
+        }
+        if (!fs.existsSync(inoPath)) {
+          return res.status(404).json({error: 'Stage firmware not found at ' + inoPath});
+        }
+        const cppCode = fs.readFileSync(inoPath, 'utf8');
+        const compileResult = arduinoCompiler.compile(cppCode, fqbn);
+        compileOutput = compileResult.output;
+        hexToUpload = compileResult.hexPath;
+        tmpSketchPath = compileResult.sketchPath;
+      }
+
+      await resetBoard(normPort);
+
+      let uploadResult;
+      if (hexToUpload) {
+        uploadResult = arduinoCompiler.upload(hexToUpload, normPort, fqbn);
+      } else {
+        uploadResult = await firmwareUploader.upload(boardType, normPort, hexPath, null);
+      }
+
+      let newDevice = null;
+      try {
+        newDevice = await serialManager.connect(normPort, {baudRate: 115200, boardType});
+      } catch (_) {}
+
+      if (tmpSketchPath) arduinoCompiler.cleanup(tmpSketchPath);
+
+      const uploadOutput = typeof uploadResult === 'string' ? uploadResult : (uploadResult && uploadResult.output) || '';
+      res.json({
+        success: true,
+        compileOutput,
+        uploadOutput,
+        device: newDevice ? {id: newDevice.id, path: newDevice.path, baudRate: newDevice.baudRate, boardType: newDevice.boardType} : null
+      });
+    } finally {
+      unlockPort(normPort);
+    }
+  } catch (err) {
+    res.status(500).json({error: err.message});
+  }
+});
+
 app.listen(PORT, '127.0.0.1', () => {
   logger.info('Hardware agent running on http://localhost:' + PORT);
   logger.info('Keep this window open while using hardware features on the web app.');
-  logger.info('arduino-cli: ' + (arduinoCompiler.isAvailable() ? 'found' : 'NOT FOUND - firmware upload will not work'));
+  logger.info('arduino-cli: ' + (arduinoCompiler.isAvailable() ? 'found' : 'NOT FOUND - "Upload Code" will not work'));
+  logger.info('avrdude: ' + (firmwareUploader.avrdudePath ? 'found (' + firmwareUploader.avrdudePath + ')' : 'NOT FOUND - the "Firmware" button may not work for boards without a compile fallback'));
 });
